@@ -1,0 +1,28 @@
+#!/bin/bash
+
+if [[ ! $# -eq 3 ]]
+then
+  echo "Args not correct, use:"
+  echo "./pdf_downloader <ISBN> <NAME_OF_PDF> <PAGE_NUM>"
+  exit 1
+fi
+
+src=147.33.74.135/knihy/uid_isbn-
+isbn="$1"
+med=/img/
+end=.png
+
+outputname="$2.pdf"
+
+for n in $(seq -f "%03g" 1 $3)
+do
+  url="http://$src$isbn$med$n$end"
+  wget -r -q -A png "$url"
+  echo -ne "Downloading page $n"\\r
+done
+
+echo "Downloading of $n pages complete, converting to PDF"
+
+convert -adjoin $src$isbn$med"*.png" $outputname
+
+echo "Complete, exported to $outputname"
